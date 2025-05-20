@@ -1,0 +1,30 @@
+name: Forge CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Foundry tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Caching dependencies for fast builds
+      - uses: actions/cache@v4
+        with:
+          path: lib
+          key: ${{ runner.os }}-foundry-${{ hashFiles('foundry.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-foundry-
+
+      # Install Foundry
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      # Run tests
+      - run: forge test -vvv
